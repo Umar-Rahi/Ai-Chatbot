@@ -49,9 +49,9 @@ Double-click `main.html` or right-click and choose "Open with" your favorite web
 
 /
 │
-├── main.html # Main web page (UI for the chatbot)
-├── style.css # Styling for the chatbot interface
-└── script.js # Chatbot logic and user interaction
+├── main.html # Main web page (UI for the chatbot)<br>
+├── style.css # Styling for the chatbot interface<br>
+└── script.js # Chatbot logic and user interaction<br>
 
 text
 
