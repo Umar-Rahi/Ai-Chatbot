@@ -31,7 +31,7 @@ This project is a **beginner-friendly AI Chatbot web application** that allows u
 ## 🚀 Getting Started
 
 1. **Clone this repository:**  
-git clone https://github.com/your-username/ai-chatbot-webapp.git
+git clone https://github.com/Umar-Rahi/Ai-Chatbot.git
 
 text
 
