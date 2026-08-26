@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
         "how are you": ["I'm good, thanks!", "I'm doing well!", "All is well!"],
         "what is your name": ["I'm an AI chatbot.", "You can call me Chatbot.", "I don't have a name."],
         "okk bye": ["Goodbye!", "Farewell!", "Take care!"],
-        "do you know me":["of course i know your name is Ashfiya Naaz you're one of my favorite people to chat with"],
+        "do you know me":["of course i know your name is Umar Rahi you're one of my favorite people to chat with"],
         "top 5 college in dehradun":["1. Graphic Era University "+
         "2. Petroleum Energy Studies 3. Doon University 4. DIT University Uttaranchal University"],
         "tell me about graphic era":["Graphic Era University (GEU) is a private university located in Dehradun, Uttarakhand, India. It was established in 1993 as Graphic Era Institute of Technology and was later granted university status in 2008. The university is affiliated with the University Grants Commission (UGC) and offers a wide range of undergraduate, postgraduate, and doctoral programs across various disciplines."]
