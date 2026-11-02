@@ -1,0 +1,48 @@
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+body{
+    background:whitesmoke;
+}
+h1 {
+    color: black;
+}
+h4{
+    color: gray;
+    text-align:center;
+    margin: 0px;
+    padding: 0px;
+    margin-block-start:0px;
+}
+#chatbox {
+    margin-top: 20px;
+    border: 1px solid black;
+    padding: 10px;
+    text-align: left;
+}
+
+#chatlog {
+    height: 150px;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+    border: 3px solid black;
+    padding: 10px;
+    background: #ffff8d;
+}
+
+#userInput {
+    width: 70%;
+    padding: 5px;
+    border: 1px black;
+}
+
+#sendButton {
+    padding: 5px 10px;
+    background-color: darkgreen;
+    color: white;
+    border: none;
+    cursor: pointer;
+}

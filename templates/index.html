@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="NexusAI — A professional AI assistant powered by OpenAI" />
+  <title>NexusAI — AI Assistant</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- marked.js — markdown parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <!-- DOMPurify — sanitise HTML to prevent XSS -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.5/dist/purify.min.js"></script>
+  <!-- highlight.js — syntax highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- ── App Shell ──────────────────────────────────────────────────────── -->
+<div id="app">
+
+  <!-- ── Sidebar ────────────────────────────────────────────────────── -->
+  <aside id="sidebar" class="sidebar" role="navigation" aria-label="Conversations">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">NexusAI</span>
+      </div>
+      <button id="sidebarToggle" class="icon-btn" aria-label="Collapse sidebar" title="Collapse sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+
+    <button id="newChatBtn" class="new-chat-btn" aria-label="Start new conversation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Chat
+    </button>
+
+    <div class="search-wrapper">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="historySearch" placeholder="Search conversations…" aria-label="Search conversations" autocomplete="off" />
+    </div>
+
+    <nav id="conversationList" class="conversation-list" aria-label="Chat history">
+      <!-- Populated by JS -->
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="clearAllBtn" class="footer-btn danger-btn" aria-label="Clear all conversations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Clear history
+      </button>
+      <button id="settingsBtn" class="footer-btn" aria-label="Open settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
+    </div>
+  </aside>
+
+  <!-- Sidebar overlay (mobile) -->
+  <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- ── Main ────────────────────────────────────────────────────────── -->
+  <main id="main" class="main">
+
+    <!-- Top nav -->
+    <header class="topbar">
+      <button id="mobileSidebarToggle" class="icon-btn mobile-only" aria-label="Open sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-center">
+        <select id="modelSelector" class="model-selector" aria-label="Select AI model">
+          <!-- Populated by JS -->
+        </select>
+      </div>
+      <div class="topbar-actions">
+        <span id="apiStatusBadge" class="api-badge" title="API connection status" aria-label="API status">
+          <span class="status-dot"></span>
+          <span class="status-text">Checking…</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- Chat messages container -->
+    <div id="chatContainer" class="chat-container" role="log" aria-live="polite" aria-label="Chat messages">
+
+      <!-- Welcome screen (shown when no conversation is active) -->
+      <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-hero">
+          <div class="welcome-logo">✦</div>
+          <h1>What can I help you with today?</h1>
+          <p>Start a conversation or choose a suggestion below.</p>
+        </div>
+        <div class="suggestion-grid" role="list">
+          <button class="suggestion-card" role="listitem" data-prompt="Explain how neural networks work in simple terms">
+            <span class="suggestion-icon">🧠</span>
+            <span class="suggestion-title">Explain a concept</span>
+            <span class="suggestion-sub">How do neural networks work?</span>
+          </button>
+          <button class="suggestion-card" role="listitem" data-prompt="Write a professional email to reschedule a meeting">
+            <span class="suggestion-icon">✉️</span>
+            <span class="suggestion-title">Write an email</span>
+            <span class="suggestion-sub">Professional email templates</span>
+          </button>
+          <button class="suggestion-card" role="listitem" data-prompt="Help me debug this Python code: ">
+            <span class="suggestion-icon">🐛</span>
+            <span class="suggestion-title">Debug code</span>
+            <span class="suggestion-sub">Find and fix bugs</span>
+          </button>
+          <button class="suggestion-card" role="listitem" data-prompt="Write a Python function to sort a list of dictionaries by a key">
+            <span class="suggestion-icon">⚙️</span>
+            <span class="suggestion-title">Generate code</span>
+            <span class="suggestion-sub">Python snippets & algorithms</span>
+          </button>
+          <button class="suggestion-card" role="listitem" data-prompt="Analyze the pros and cons of using microservices architecture">
+            <span class="suggestion-icon">🔍</span>
+            <span class="suggestion-title">Analyze a problem</span>
+            <span class="suggestion-sub">Structured analysis & trade-offs</span>
+          </button>
+          <button class="suggestion-card" role="listitem" data-prompt="Brainstorm 10 creative name ideas for a tech startup that builds AI tools">
+            <span class="suggestion-icon">💡</span>
+            <span class="suggestion-title">Brainstorm ideas</span>
+            <span class="suggestion-sub">Creative thinking & ideation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages area -->
+      <div id="messagesArea" class="messages-area" aria-label="Conversation messages"></div>
+
+    </div><!-- /chatContainer -->
+
+    <!-- Composer -->
+    <div class="composer-wrapper">
+      <div id="stopGenBtn" class="stop-gen-wrapper" hidden>
+        <button id="stopGeneration" class="stop-btn" aria-label="Stop generating">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          Stop generating
+        </button>
+      </div>
+      <div class="composer">
+        <textarea
+          id="messageInput"
+          class="composer-input"
+          placeholder="Message NexusAI…"
+          rows="1"
+          maxlength="4000"
+          aria-label="Message input"
+          aria-multiline="true"
+        ></textarea>
+        <div class="composer-footer">
+          <span id="charCount" class="char-count" aria-live="polite"></span>
+          <button id="sendBtn" class="send-btn" disabled aria-label="Send message">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+      <p class="composer-hint">Enter to send · Shift+Enter for new line</p>
+    </div>
+
+  </main><!-- /main -->
+</div><!-- /app -->
+
+<!-- ── Settings Modal ──────────────────────────────────────────────────── -->
+<div id="settingsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Settings" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Settings</h2>
+      <button id="closeSettings" class="icon-btn" aria-label="Close settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <section class="settings-section">
+        <h3>Appearance</h3>
+        <label class="setting-row">
+          <span>Theme</span>
+          <div class="theme-toggle-group" role="group" aria-label="Theme selection">
+            <button class="theme-btn active" data-theme="dark" aria-pressed="true">Dark</button>
+            <button class="theme-btn" data-theme="light" aria-pressed="false">Light</button>
+          </div>
+        </label>
+      </section>
+      <section class="settings-section">
+        <h3>AI Model</h3>
+        <label class="setting-row">
+          <span>Active model</span>
+          <select id="settingsModelSelector" class="settings-select" aria-label="Select model in settings"></select>
+        </label>
+        <p class="settings-hint">Model selection applies to new messages.</p>
+      </section>
+      <section class="settings-section">
+        <h3>Connection</h3>
+        <div class="setting-row">
+          <span>API status</span>
+          <span id="settingsApiStatus" class="api-status-text">Checking…</span>
+        </div>
+        <button id="refreshStatusBtn" class="secondary-btn">Refresh</button>
+      </section>
+      <section class="settings-section">
+        <h3>Keyboard shortcuts</h3>
+        <div class="shortcuts-grid">
+          <kbd>Enter</kbd><span>Send message</span>
+          <kbd>Shift + Enter</kbd><span>New line</span>
+          <kbd>Ctrl + K</kbd><span>New chat</span>
+          <kbd>Ctrl + /</kbd><span>Open settings</span>
+          <kbd>Esc</kbd><span>Close modal</span>
+        </div>
+      </section>
+      <section class="settings-section">
+        <h3>About</h3>
+        <p class="settings-hint">NexusAI is an open-source AI chatbot built with Flask and OpenAI. It stores conversations locally in SQLite. No data is sent to third parties other than your configured AI provider.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ── Confirm Modal ────────────────────────────────────────────────────── -->
+<div id="confirmModal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2 id="confirmTitle">Confirm</h2>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage"></p>
+      <div class="confirm-actions">
+        <button id="confirmCancel" class="secondary-btn">Cancel</button>
+        <button id="confirmOk" class="danger-btn-solid">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Rename Modal ─────────────────────────────────────────────────────── -->
+<div id="renameModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Rename conversation" hidden>
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2>Rename conversation</h2>
+      <button id="closeRename" class="icon-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="text" id="renameInput" class="rename-input" maxlength="200" placeholder="Conversation title…" aria-label="New conversation title" />
+      <div class="confirm-actions">
+        <button id="renameCancelBtn" class="secondary-btn">Cancel</button>
+        <button id="renameConfirmBtn" class="primary-btn">Rename</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast container ──────────────────────────────────────────────────── -->
+<div id="toastContainer" class="toast-container" role="region" aria-live="polite" aria-label="Notifications"></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
